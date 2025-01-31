@@ -53,7 +53,7 @@ const SurahModal: React.FC<SurahModalProps> = ({
               <span className="flex-1 text-sm font-medium text-left font-thin quran-font">{revalationTypeArabic(surah.revelationType)}</span>
               <span className="flex-0 px-1 text-lg font-medium text-center quran-font font-thin">آية</span>
               <span className="flex-0 text-lg font-medium text-center font-thin">{arabicNumber(surah.numberOfAyahs)}</span>
-              <span className="flex-1 text-lg font-bold text-right quran-font">{arabicNumber(surah.number)}. {surah.name}</span>
+              <span className="flex-1 text-lg font-bold text-right quran-font"><span className="text-sm sans">{arabicNumber(surah.number)}.</span> {surah.name}</span>
             </button>
           ))}
         </div>

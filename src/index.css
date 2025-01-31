@@ -14,6 +14,9 @@ body {
 .quran-font {
   font-family: 'quran_font';
 }
+.sans {
+  font-family: 'sans-serif';
+}
 .color-mode {
   filter: invert(1) hue-rotate(180deg);
 }
