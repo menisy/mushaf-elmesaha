@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import SurahModal from './SurahModal';
+import { arabicNumber, arabicWordLiteral } from '../utils';
+
 
 interface HeaderProps {
   surahName: string;
@@ -8,60 +11,9 @@ interface HeaderProps {
   quarterHizb: boolean;
   halfHizb: boolean;
   threeQuarterHizb: boolean;
-}
-
-const arabicNumber = (number: number) => {
-  const arabicNumberChars = {
-    1: '١',
-    2: '٢',
-    3: '٣',
-    4: '٤',
-    5: '٥',
-    6: '٦',
-    7: '٧',
-    8: '٨',
-    9: '٩',
-    0: '٠',
-  };
-
-  return number.toString().split('').map(char => arabicNumberChars[char]).join('');
-}
-
-const arabicWordLiteral = (number: number) => {
-  const literals = {
-    1: 'الأَوَّلُ',
-    2: 'الثَّانِي',
-    3: 'الثَّالِثُ',
-    4: 'الرَّابِعُ',
-    5: 'الخَامِسُ',
-    6: 'السَّادِسُ',
-    7: 'السَّابِعُ',
-    8: 'الثَّامِنُ',
-    9: 'التَّاسِعُ',
-    10: 'العَاشِرُ',
-    11: 'الحَادِي عَشَرَ',
-    12: 'الثَّانِي عَشَرَ',
-    13: 'الثَّالِثُ عَشَرَ',
-    14: 'الرَّابِعُ عَشَرَ',
-    15: 'الخَامِسُ عَشَرَ',
-    16: 'السَّادِسُ عَشَرَ',
-    17: 'السَّابِعُ عَشَرَ',
-    18: 'الثَّامِنُ عَشَرَ',
-    19: 'التَّاسِعُ عَشَرَ',
-    20: 'العِشْرُونَ',
-    21: 'الحَادِي وَالعِشْرُونَ',
-    22: 'الثَّانِي وَالعِشْرُونَ',
-    23: 'الثَّالِثُ وَالعِشْرُونَ',
-    24: 'الرَّابِعُ وَالعِشْرُونَ',
-    25: 'الخَامِسُ وَالعِشْرُونَ',
-    26: 'السَّادِسُ وَالعِشْرُونَ',
-    27: 'السَّابِعُ وَالعِشْرُونَ',
-    28: 'الثَّامِنُ وَالعِشْرُونَ',
-    29: 'التَّاسِعُ وَالعِشْرُونَ',
-    30: 'الثَّلَاثُونَ',
-}
-
-  return literals[number.toString()];
+  onSurahSelect: (surahNumber: number) => void;
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ surahName,
@@ -70,8 +22,18 @@ const Header: React.FC<HeaderProps> = ({ surahName,
                                          pageNumber ,
                                          quarterHizb,
                                          halfHizb,
-                                         threeQuarterHizb, }) => {
+                                         threeQuarterHizb,
+                                         onSurahSelect,
+                                         isModalOpen,
+                                         setIsModalOpen }) => {
 
+  const handleHeaderClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const hizbArabicNumber = arabicNumber(hizb);
   const pageArabicNumber = arabicNumber(pageNumber + 1);
@@ -81,21 +43,28 @@ const Header: React.FC<HeaderProps> = ({ surahName,
   const surahNameSplitRest = surahName.split(' ').slice(1).join(' ');
 
   return (
-    <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50">
-      <div className="flex-1 text-left" style={{ fontFamily: 'quran_font' }}>
-      <span className="px-1">{surahNameSplitFirst}</span>
-      <span>{surahNameSplitRest}</span>
+    <header>
+      <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50" onClick={handleHeaderClick}>
+        <div className="flex-1 text-left quran-font">
+          <span className="px-1">{surahNameSplitFirst}</span>
+          <span>{surahNameSplitRest}</span>
+        </div>
+        <div className="flex-1 text-center">
+          {pageArabicNumber} <span className="icon-placeholder">📖</span>
+        </div>
+        <div className="flex-1 text-right quran-font">
+          الجُزْءُ {juzuuWord}{' '}
+          - {hizbFraction}{' '}
+          الحِزْب
+          <span className="px-1" style={{ fontFamily: 'sans-serif', fontSize: 12 }}>{hizbArabicNumber}</span>{' '}
+        </div>
       </div>
-      <div className="flex-1 text-center">
-        {pageArabicNumber} <span className="icon-placeholder">📖</span>
-      </div>
-      <div className="flex-1 text-right" style={{ fontFamily: 'quran_font' }}>
-      الجُزْءُ {juzuuWord}{' '}
-      - {hizbFraction}{' '}
-      الحِزْب
-      <span className="px-1" style={{ fontFamily: 'sans-serif', fontSize: 12 }}>{hizbArabicNumber}</span>{' '}
-      </div>
-    </div>
+      <SurahModal
+        isOpen={isModalOpen}
+        onRequestClose={handleCloseModal}
+        onSurahSelect={onSurahSelect}
+      />
+    </header>
   );
 };
 

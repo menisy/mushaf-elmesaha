@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import type { Page } from '../types';
 import Header from './Header';
 
@@ -8,7 +8,9 @@ export default function BookReader() {
   const [currentPage, setCurrentPage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768); // Assume mobile if width ≤ 768px
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isColorMode, setIsColorMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,12 +28,34 @@ export default function BookReader() {
         quarterHizb: page.quarter_hizb,
         halfHizb: page.half_hizb,
         threeQuarterHizb: page.three_quarter_hizb,
+        surahNumber: page.surah_number,
       }));
       setBookPages(pages);
     };
 
     fetchBookPages();
   }, []);
+
+  const navigatePage = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && currentPage > 0) {
+      setCurrentPage(curr => curr - 1);
+    } else if (direction === 'next' && currentPage < bookPages.length - 1) {
+      setCurrentPage(curr => curr + 1);
+    }
+  };
+
+  const handleSurahSelect = (surahNumber: number) => {
+    console.log(surahNumber);
+    const firstPageOfSurah = bookPages.findIndex(page => page.surahNumber === surahNumber);
+    if (firstPageOfSurah !== -1) {
+      setCurrentPage(firstPageOfSurah);
+      setIsModalOpen(false);
+    }
+  };
+
+  const toggleColorMode = () => {
+    setIsColorMode(!isColorMode);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,14 +92,6 @@ export default function BookReader() {
     setTouchEnd(null);
   };
 
-  const navigatePage = (direction: 'prev' | 'next') => {
-    if (direction === 'prev' && currentPage > 0) {
-      setCurrentPage(curr => curr - 1);
-    } else if (direction === 'next' && currentPage < bookPages.length - 1) {
-      setCurrentPage(curr => curr + 1);
-    }
-  };
-
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') navigatePage('next');
@@ -103,13 +119,16 @@ export default function BookReader() {
           quarterHizb={bookPages[currentPage].quarterHizb}
           halfHizb={bookPages[currentPage].halfHizb}
           threeQuarterHizb={bookPages[currentPage].threeQuarterHizb}
+          onSurahSelect={handleSurahSelect}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
         />
       )}
 
       {isDesktop && (
         <button
-          onClick={() => navigatePage('next')}
-          className="fixed left-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
+          onClick={() => navigatePage('prev')}
+          className="fixed right-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
           disabled={currentPage === bookPages.length - 1}
         >
           <ChevronLeft className="w-6 h-6 text-white" />
@@ -121,7 +140,7 @@ export default function BookReader() {
           <img
             src={bookPages[currentPage].imageUrl}
             alt={bookPages[currentPage].title}
-            className="w-full h-auto max-h-[90vh] object-contain"
+            className={`w-full h-auto max-h-[90vh] object-contain ${isColorMode ? 'color-mode' : ''}`}
             style={{ direction: 'rtl' }}
           />
         )}
@@ -129,13 +148,20 @@ export default function BookReader() {
 
       {isDesktop && (
         <button
-          onClick={() => navigatePage('prev')}
-          className="fixed right-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
+          onClick={() => navigatePage('next')}
+          className="fixed left-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
           disabled={currentPage === 0}
         >
           <ChevronRight className="w-6 h-6 text-white" />
         </button>
       )}
+
+      <button
+        onClick={toggleColorMode}
+        className="fixed bottom-4 left-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
+      >
+        <Eye className="w-6 h-6 text-white" />
+      </button>
     </div>
   );
 }

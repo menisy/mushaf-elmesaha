@@ -10,6 +10,7 @@ export interface Page {
   quarterHizb: boolean;
   halfHizb: boolean;
   threeQuarterHizb: boolean;
+  surahNumber: number;
 }
 
 export interface BookMetadata {

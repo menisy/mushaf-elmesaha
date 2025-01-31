@@ -8,3 +8,12 @@
   font-weight: normal;
   font-style: normal;
 }
+body {
+  font-family: 'sans-serif';
+}
+.quran-font {
+  font-family: 'quran_font';
+}
+.color-mode {
+  filter: invert(1) hue-rotate(180deg);
+}
