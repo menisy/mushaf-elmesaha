@@ -42,7 +42,7 @@ const SurahModal: React.FC<SurahModalProps> = ({
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
     >
       <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">اختر سورة</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center">الفهرس</h2>
         <div className="overflow-y-auto max-h-96">
           {surahs.map((surah) => (
             <button
