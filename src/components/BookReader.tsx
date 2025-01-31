@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Bookmark } from 'lucide-react'; // Import the Bookmark icon
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for react-toastify
 import type { Page } from '../types';
 import Header from './Header';
 
@@ -31,6 +33,12 @@ export default function BookReader() {
         surahNumber: page.surah_number,
       }));
       setBookPages(pages);
+
+      // Retrieve the bookmarked page from local storage
+      const bookmarkedPage = localStorage.getItem('bookmarkedPage');
+      if (bookmarkedPage) {
+        setCurrentPage(Number(bookmarkedPage));
+      }
     };
 
     fetchBookPages();
@@ -45,7 +53,6 @@ export default function BookReader() {
   };
 
   const handleSurahSelect = (surahNumber: number) => {
-    console.log(surahNumber);
     const firstPageOfSurah = bookPages.findIndex(page => page.surahNumber === surahNumber);
     if (firstPageOfSurah !== -1) {
       setCurrentPage(firstPageOfSurah);
@@ -55,6 +62,19 @@ export default function BookReader() {
 
   const toggleColorMode = () => {
     setIsColorMode(!isColorMode);
+  };
+
+  const bookmarkPage = () => {
+    localStorage.setItem('bookmarkedPage', currentPage.toString());
+    toast.success('تم وضع إشارة مرجعية على الصفحة', {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   useEffect(() => {
@@ -129,9 +149,9 @@ export default function BookReader() {
         <button
           onClick={() => navigatePage('prev')}
           className="fixed right-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
-          disabled={currentPage === bookPages.length - 1}
+          disabled={currentPage === 0}
         >
-          <ChevronLeft className="w-6 h-6 text-white" />
+          <ChevronRight className="w-6 h-6 text-white" />
         </button>
       )}
 
@@ -150,9 +170,9 @@ export default function BookReader() {
         <button
           onClick={() => navigatePage('next')}
           className="fixed left-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
-          disabled={currentPage === 0}
+          disabled={currentPage === bookPages.length - 1}
         >
-          <ChevronRight className="w-6 h-6 text-white" />
+          <ChevronLeft className="w-6 h-6 text-white" />
         </button>
       )}
 
@@ -162,6 +182,15 @@ export default function BookReader() {
       >
         <Eye className="w-6 h-6 text-white" />
       </button>
+
+      <button
+        onClick={bookmarkPage}
+        className="fixed bottom-4 right-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
+      >
+        <Bookmark className="w-6 h-6 text-white" />
+      </button>
+
+      <ToastContainer />
     </div>
   );
 }
