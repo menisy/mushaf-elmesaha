@@ -53,8 +53,8 @@ const Header: React.FC<HeaderProps> = ({ surahName,
           {pageArabicNumber} <span className="icon-placeholder">📖</span>
         </div>
         <div className="flex-1 text-right quran-font">
-          الجُزْءُ {juzuuWord}{' '}
-          - {hizbFraction}{' '}
+          <div className="block">الجُزْءُ {juzuuWord}{' '}</div>
+          {hizbFraction}{' '}
           الحِزْب
           <span className="px-1" style={{ fontFamily: 'sans-serif', fontSize: 12 }}>{hizbArabicNumber}</span>{' '}
         </div>
