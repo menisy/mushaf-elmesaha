@@ -2,10 +2,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
+    <ToastContainer />
   </StrictMode>
 );
 
@@ -31,26 +33,29 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function showInstallPromotion() {
-  const installButton = document.createElement('button');
-  installButton.innerText = 'Install App';
-  installButton.style.position = 'fixed';
-  installButton.style.bottom = '10px';
-  installButton.style.left = '10px';
-  installButton.style.zIndex = '1000';
-  installButton.addEventListener('click', () => {
-    // Hide the app provided install promotion
-    installButton.style.display = 'none';
-    // Show the install prompt
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult: any) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      } else {
-        console.log('User dismissed the install prompt');
-      }
+  toast.info('Install this app on your device', {
+    position: "bottom-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    onClose: () => {
       deferredPrompt = null;
-    });
+    },
+    onClick: () => {
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    }
   });
-  document.body.appendChild(installButton);
 }

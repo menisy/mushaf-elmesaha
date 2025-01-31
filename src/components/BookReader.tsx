@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Eye, Bookmark } from 'lucide-react'; // Import the Bookmark icon
 import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
-import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for react-toastify
 import type { Page } from '../types';
 import Header from './Header';
 
