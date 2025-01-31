@@ -70,13 +70,9 @@ export default function BookReader() {
 
   const navigatePage = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentPage > 0) {
-      console.log(currentPage)
       setCurrentPage(curr => curr - 1);
-      console.log(currentPage)
     } else if (direction === 'next' && currentPage < bookPages.length - 1) {
-      console.log(currentPage)
       setCurrentPage(curr => curr + 1);
-      console.log(currentPage)
     }
   };
 

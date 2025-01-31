@@ -79,15 +79,16 @@ const Header: React.FC<HeaderProps> = ({ surahName,
   const hizbFraction = threeQuarterHizb ? 'ثلاثة أرباع' : halfHizb ? 'نصف' : quarterHizb ? 'ربع' : '';
 
   return (
-    <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center" style={{ fontFamily: 'YourCustomArabicFont' }}>
-      <div className="flex-1 text-left">
+    <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50">
+      <div className="flex-1 text-left" style={{ fontFamily: 'quran_font' }}>
       سورة {surahName}
       </div>
       <div className="flex-1 text-center">
         {pageArabicNumber} <span className="icon-placeholder">📖</span>
       </div>
-      <div className="flex-1 text-right">
-      الجزء {juzuuWord}،  {hizbFraction} الحزب {hizbArabicNumber}{' '}
+      <div className="flex-1 text-right" style={{ fontFamily: 'quran_font' }}>
+      الجزء {juzuuWord}،  {hizbFraction} الحزب
+      <span className="align-top" style={{ fontFamily: 'sans-serif', fontSize: 10 }}>{hizbArabicNumber}</span>{' '}
       </div>
     </div>
   );
