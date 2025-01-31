@@ -159,7 +159,7 @@ export default function BookReader() {
           <img
             src={bookPages[currentPage].imageUrl}
             alt={bookPages[currentPage].title}
-            className={`w-full h-auto max-h-[90vh] object-contain ${isColorMode ? 'color-mode' : ''}`}
+            className={`w-full h-auto max-h-[90vh] mt-4 object-contain ${isColorMode ? 'color-mode' : ''}`}
             style={{ direction: 'rtl' }}
           />
         )}

@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ surahName,
 
   return (
     <header>
-      <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50" onClick={handleHeaderClick}>
+      <div className="w-full bg-gray-800 text-white text-xs py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50" onClick={handleHeaderClick}>
         <div className="flex-1 text-left quran-font">
           <span className="px-1">{surahNameSplitFirst}</span>
           <span>{surahNameSplitRest}</span>
