@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Page } from '../types';
+import Header from './Header';
 
 export default function BookReader() {
   const [bookPages, setBookPages] = useState<Page[]>([]);
@@ -17,7 +18,14 @@ export default function BookReader() {
       const pages = data.pages.map((page: any) => ({
         imageUrl: `/pages/${page.image_name}`,
         pageNumber: page.number,
-        title: `Surah ${page.suurah.english} - Page ${page.number}`
+        arabicPageNumber: page.arabic_page_number,
+        title: `Surah ${page.suurah.english} - Page ${page.number}`,
+        surahName: page.suurah.arabic,
+        juzuu: page.juzuu,
+        hizb: page.hizb,
+        quarterHizb: page.quarter_hizb,
+        halfHizb: page.half_hizb,
+        threeQuarterHizb: page.three_quarter_hizb,
       }));
       setBookPages(pages);
     };
@@ -62,9 +70,13 @@ export default function BookReader() {
 
   const navigatePage = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentPage > 0) {
+      console.log(currentPage)
       setCurrentPage(curr => curr - 1);
+      console.log(currentPage)
     } else if (direction === 'next' && currentPage < bookPages.length - 1) {
+      console.log(currentPage)
       setCurrentPage(curr => curr + 1);
+      console.log(currentPage)
     }
   };
 
@@ -81,11 +93,23 @@ export default function BookReader() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-gray-900 flex items-center justify-center touch-pan-x"
+      className="min-h-screen bg-gray-900 flex flex-col items-center justify-center touch-pan-x"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {bookPages.length > 0 && (
+        <Header
+          surahName={bookPages[currentPage].surahName}
+          pageNumber={bookPages[currentPage].pageNumber}
+          juzuu={bookPages[currentPage].juzuu}
+          hizb={bookPages[currentPage].hizb}
+          quarterHizb={bookPages[currentPage].quarterHizb}
+          halfHizb={bookPages[currentPage].halfHizb}
+          threeQuarterHizb={bookPages[currentPage].threeQuarterHizb}
+        />
+      )}
+
       {isDesktop && (
         <button
           onClick={() => navigatePage('next')}
@@ -96,7 +120,7 @@ export default function BookReader() {
         </button>
       )}
 
-      <div className="w-full max-w-3xl mx-auto px-4">
+      <div className="w-full max-w-3xl mx-auto">
         {bookPages.length > 0 && (
           <img
             src={bookPages[currentPage].imageUrl}
