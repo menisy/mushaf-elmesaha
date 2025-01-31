@@ -1,6 +1,6 @@
 {
   "name": "مصحف المساحة",
-  "short_name": "مصحف",
+  "short_name": "مصحف المساحة",
   "description": "A Quran reading app",
   "start_url": "/",
   "display": "standalone",
