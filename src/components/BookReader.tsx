@@ -13,13 +13,19 @@ export default function BookReader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isColorMode, setIsColorMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // rjust 1 to 001
+  const currentPageString = currentPage.toString().padStart(3, '0');
+
+  const convertPageNumerToAdjustedString = (pageNumber: number) => {
+    return pageNumber.toString().padStart(3, '0') + '.png';
+  };
 
   useEffect(() => {
     const fetchBookPages = async () => {
       const response = await fetch('/quran_metadata.json');
       const data = await response.json();
       const pages = data.pages.map((page: any) => ({
-        imageUrl: `/pages/${page.image_name}`,
+        imageUrl: `/new_pages/${convertPageNumerToAdjustedString(page.number+2)}`,
         pageNumber: page.number,
         arabicPageNumber: page.arabic_page_number,
         title: `Surah ${page.suurah.english} - Page ${page.number}`,
@@ -124,7 +130,9 @@ export default function BookReader() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-gray-900 flex flex-col items-center justify-center touch-pan-x"
+      className={`min-h-screen flex flex-col items-center justify-center touch-pan-x ${
+        isColorMode ? 'bg-gray-900' : 'bg-[#FFFDD0]'
+      }`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -159,7 +167,9 @@ export default function BookReader() {
           <img
             src={bookPages[currentPage].imageUrl}
             alt={bookPages[currentPage].title}
-            className={`w-full h-auto max-h-[90vh] mt-4 object-contain ${isColorMode ? 'color-mode' : ''}`}
+            className={`w-full h-auto max-h-[90vh] mt-2 px-2 object-contain ${
+              isColorMode ? 'invert brightness-90' : ''
+            }`}
             style={{ direction: 'rtl' }}
           />
         )}
