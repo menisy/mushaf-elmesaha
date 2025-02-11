@@ -43,7 +43,10 @@ const Header: React.FC<HeaderProps> = ({ surahName,
   const surahNameSplitRest = surahName.split(' ').slice(1).join(' ');
 
   return (
-    <header>
+    <div
+      className="fixed top-0 left-0 right-0 bg-gray-800 text-white p-4 z-50"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="w-full bg-gray-800 text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 z-50" onClick={handleHeaderClick}>
         <div className="flex-1 text-left quran-font">
           <span className="px-1">{surahNameSplitFirst}</span>
@@ -66,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ surahName,
         onSurahSelect={onSurahSelect}
         />
       </div>
-    </header>
+    </div>
   );
 };
 

@@ -38,16 +38,24 @@ const SurahModal: React.FC<SurahModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Surah List"
-      className="fixed inset-0 flex items-center justify-center p-4"
+      className="fixed inset-0 flex items-center justify-center"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       style={{
         overlay: {
           zIndex: 100,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         },
         content: {
           position: 'relative',
-          zIndex: 101,
-        },
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          inset: 'auto',
+          margin: '1rem'
+        }
       }}
     >
       <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
