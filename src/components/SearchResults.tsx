@@ -14,6 +14,7 @@ interface QuranAyah {
   ayahNumber: number;
   text: string;
   isSurahName?: boolean; // To differentiate between surah names and ayahs
+  originalText?: string; // Optional original text for display
 }
 
 interface HighlightData {
@@ -45,6 +46,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
       .replace(/ى/g, 'ي'); // Normalize ya
   };
 
+  // Add function to clean first aya text
+  const cleanFirstAyaText = (text: string, isFirstAya: boolean) => {
+    if (!isFirstAya) return text;
+
+    // Remove "بسم الله الرحمن الرحيم" and any extra spaces
+    return text.replace(/^بسم الله الرحمن الرحيم\s*/, '').trim();
+  };
+
   useEffect(() => {
     const setupSearch = async () => {
       try {
@@ -64,32 +73,37 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
           ...quranData.data.surahs.map((surah: any) => ({
             surahNumber: surah.number,
             surahName: surah.name,
-            ayahNumber: 1, // First ayah for surah names
+            ayahNumber: 1,
             text: normalizeArabic(surah.name),
             isSurahName: true
           })),
           // Add ayahs as searchable items
           ...quranData.data.surahs.flatMap((surah: any) =>
-            surah.ayahs.map((ayah: any) => ({
-              surahNumber: surah.number,
-              surahName: surah.name,
-              ayahNumber: ayah.numberInSurah,
-              text: normalizeArabic(ayah.text),
-              isSurahName: false
-            }))
+            surah.ayahs.map((ayah: any) => {
+              const isFirstAya = ayah.numberInSurah === 1;
+              const cleanedText = cleanFirstAyaText(ayah.text, isFirstAya);
+
+              return {
+                surahNumber: surah.number,
+                surahName: surah.name,
+                ayahNumber: ayah.numberInSurah,
+                text: normalizeArabic(cleanedText),
+                isSurahName: false,
+                originalText: ayah.text // Keep original text for display
+              };
+            })
           )
         ];
 
         // Updated Fuse.js configuration
         const fuseInstance = new Fuse(searchableData, {
           keys: ['text'],
-          threshold: 0.2,
           includeScore: true,
-          minMatchCharLength: 3,
-          distance: 100,
-          ignoreLocation: true,
           useExtendedSearch: true,
-          findAllMatches: false,
+          findAllMatches: true,
+          ignoreLocation: true,
+          threshold: 0.0,  // Exact matching
+          minMatchCharLength: 2
         });
 
         setFuse(fuseInstance);
@@ -140,6 +154,23 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
     return 0;
   };
 
+  const sortSearchResults = (results: Array<Fuse.FuseResult<QuranAyah>>) => {
+    return [...results].sort((a, b) => {
+      // Always show surah names first
+      if (a.item.isSurahName !== b.item.isSurahName) {
+        return a.item.isSurahName ? -1 : 1;
+      }
+
+      // If both are surah names or both are ayahs, sort by surah number
+      if (a.item.surahNumber !== b.item.surahNumber) {
+        return a.item.surahNumber - b.item.surahNumber;
+      }
+
+      // If same surah and both are ayahs, sort by aya number
+      return a.item.ayahNumber - b.item.ayahNumber;
+    });
+  };
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (!fuse || query.length < 2) {
@@ -149,9 +180,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
     }
 
     const normalizedQuery = normalizeArabic(query);
-    const searchResults = fuse.search(normalizedQuery);
-    setAllResults(searchResults);
-    setResults(searchResults.slice(0, RESULTS_PER_PAGE));
+    // Use extended search syntax for exact substring matching
+    const searchResults = fuse.search(`'${normalizedQuery}`); // Note the single quote for exact matching
+    const sortedResults = sortSearchResults(searchResults);
+
+    setAllResults(sortedResults);
+    setResults(sortedResults.slice(0, RESULTS_PER_PAGE));
     setDisplayedResults(RESULTS_PER_PAGE);
   };
 
@@ -167,13 +201,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-11/12 max-h-[80vh] overflow-hidden flex flex-col">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold dark:text-white">بحث في القرآن</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
             ✕
           </button>
+          <h2 className="text-xl font-bold dark:text-white text-right">بحث في القرآن</h2>
         </div>
 
         <input
@@ -205,7 +239,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
                   `${result.item.surahName} - الآية ${arabicNumber(result.item.ayahNumber)}`
                 )}
               </div>
-              <div className="text-gray-600 dark:text-gray-300">{result.item.text}</div>
+              {!result.item.isSurahName && (
+                <div className="text-gray-600 dark:text-gray-300">
+                  {result.item.originalText || result.item.text}
+                </div>
+              )}
             </button>
           ))}
 
@@ -220,7 +258,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
               onClick={handleLoadMore}
               className="w-full p-3 mt-4 text-center text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
             >
-              عرض المزيد من النتائج ({allResults.length - displayedResults})
+              عرض المزيد من النتائج ({arabicNumber(allResults.length - displayedResults)})
             </button>
           )}
         </div>
