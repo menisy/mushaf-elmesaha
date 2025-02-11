@@ -37,12 +37,14 @@ const TafseerView: React.FC<TafseerViewProps> = ({ ayaId, isOpen, onClose }) => 
   const [tafseerContent, setTafseerContent] = useState<string | null>(null);
   const [surahName, setSurahName] = useState<string | null>(null);
   const [ayaNumber, setAyaNumber] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchTafseerContent = async () => {
       if (!ayaId) return;
 
       try {
+        setIsLoading(true);
         // Parse the ayaId (v1_2 format)
         const [, surahStr, ayaStr] = ayaId.match(/v(\d+)_(\d+)/) || [];
         const surahNumber = parseInt(surahStr);
@@ -66,6 +68,8 @@ const TafseerView: React.FC<TafseerViewProps> = ({ ayaId, isOpen, onClose }) => 
       } catch (error) {
         console.error('Error fetching tafseer:', error);
         setTafseerContent('عذراً، حدث خطأ في تحميل التفسير');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -73,6 +77,15 @@ const TafseerView: React.FC<TafseerViewProps> = ({ ayaId, isOpen, onClose }) => 
       fetchTafseerContent();
     }
   }, [ayaId, isOpen]);
+
+  // Clear content when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTafseerContent(null);
+      setSurahName(null);
+      setAyaNumber(null);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -111,11 +124,17 @@ const TafseerView: React.FC<TafseerViewProps> = ({ ayaId, isOpen, onClose }) => 
             ✕
           </button>
         </div>
-        <div className="dark:text-white">
-          {tafseerContent ? (
+        <div className="dark:text-white min-h-[100px]">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-center text-gray-500">جاري تحميل التفسير...</p>
+            </div>
+          ) : tafseerContent ? (
             <p className="text-right leading-8">{tafseerContent}</p>
           ) : (
-            <p className="text-center text-gray-500">جاري تحميل التفسير...</p>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-center text-gray-500">لا يوجد تفسير</p>
+            </div>
           )}
         </div>
       </div>
