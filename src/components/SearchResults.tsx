@@ -26,11 +26,15 @@ interface HighlightData {
   }>;
 }
 
+const RESULTS_PER_PAGE = 30;
+
 const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResultClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Array<Fuse.FuseResult<QuranAyah>>>([]);
   const [fuse, setFuse] = useState<Fuse<QuranAyah> | null>(null);
   const [highlightData, setHighlightData] = useState<HighlightData>({});
+  const [displayedResults, setDisplayedResults] = useState<number>(RESULTS_PER_PAGE);
+  const [allResults, setAllResults] = useState<Array<Fuse.FuseResult<QuranAyah>>>([]);
 
   // Normalize Arabic text by removing diacritics and normalizing letters
   const normalizeArabic = (text: string) => {
@@ -139,13 +143,22 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (!fuse || query.length < 2) {
+      setAllResults([]);
       setResults([]);
       return;
     }
 
     const normalizedQuery = normalizeArabic(query);
     const searchResults = fuse.search(normalizedQuery);
-    setResults(searchResults.slice(0, 10));
+    setAllResults(searchResults);
+    setResults(searchResults.slice(0, RESULTS_PER_PAGE));
+    setDisplayedResults(RESULTS_PER_PAGE);
+  };
+
+  const handleLoadMore = () => {
+    const nextBatch = allResults.slice(displayedResults, displayedResults + RESULTS_PER_PAGE);
+    setResults([...results, ...nextBatch]);
+    setDisplayedResults(prev => prev + RESULTS_PER_PAGE);
   };
 
   if (!isOpen) return null;
@@ -200,6 +213,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({ isOpen, onClose, onResult
             <div className="text-center p-4 text-gray-500 dark:text-gray-400">
               لا توجد نتائج
             </div>
+          )}
+
+          {allResults.length > displayedResults && (
+            <button
+              onClick={handleLoadMore}
+              className="w-full p-3 mt-4 text-center text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            >
+              عرض المزيد من النتائج ({allResults.length - displayedResults})
+            </button>
           )}
         </div>
       </div>
