@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Eye, Bookmark } from 'lucide-react'; // Impo
 import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
 import type { Page } from '../types';
 import Header from './Header';
+import AyaHighlighter from './AyaHighliter';
 
 export default function BookReader() {
   const [bookPages, setBookPages] = useState<Page[]>([]);
@@ -13,6 +14,7 @@ export default function BookReader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isColorMode, setIsColorMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   // rjust 1 to 001
   const currentPageString = currentPage.toString().padStart(3, '0');
 
@@ -162,16 +164,20 @@ export default function BookReader() {
         </button>
       )}
 
-      <div className="w-full max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto relative w-full flex justify-center">
         {bookPages.length > 0 && (
-          <img
-            src={bookPages[currentPage].imageUrl}
-            alt={bookPages[currentPage].title}
-            className={`w-full h-auto max-h-[90vh] mt-2 px-2 object-contain ${
-              isColorMode ? 'invert brightness-90' : ''
-            }`}
-            style={{ direction: 'rtl' }}
-          />
+          <div className="relative">
+            <img
+              ref={imageRef}
+              src={bookPages[currentPage].imageUrl}
+              alt={bookPages[currentPage].title}
+              className={`h-auto max-h-[90vh] mx-auto mt-2 px-2 object-contain ${
+                isColorMode ? 'invert brightness-90' : ''
+              }`}
+              style={{ direction: 'rtl', border: '1px solid orange' }}
+            />
+            <AyaHighlighter currentPage={currentPage} imageRef={imageRef} />
+          </div>
         )}
       </div>
 
