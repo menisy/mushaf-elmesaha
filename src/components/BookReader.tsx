@@ -22,6 +22,7 @@ export default function BookReader() {
   // rjust 1 to 001
   const currentPageString = currentPage.toString().padStart(3, '0');
   const [isOfflineReady, setIsOfflineReady] = useState(false);
+  const [cacheProgress, setCacheProgress] = useState<{ cached: number; total: number } | null>(null);
 
   const convertPageNumerToAdjustedString = (pageNumber: number) => {
     return pageNumber.toString().padStart(3, '0') + '.png';
@@ -147,11 +148,38 @@ export default function BookReader() {
     }
   }, []);
 
-  if (!isOfflineReady) {
+  useEffect(() => {
+    // Listen for service worker messages
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'CACHE_PROGRESS') {
+          setCacheProgress({
+            cached: event.data.cached,
+            total: event.data.total
+          });
+        }
+      });
+    }
+  }, []);
+
+  if (!isOfflineReady || cacheProgress) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900">
         <div className="text-center text-white">
           <h2 className="text-xl mb-4">جاري تحميل المصحف</h2>
+          {cacheProgress && (
+            <div className="mb-4">
+              <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 transition-all duration-300"
+                  style={{ width: `${(cacheProgress.cached / cacheProgress.total) * 100}%` }}
+                />
+              </div>
+              <p className="mt-2 text-sm text-gray-400">
+                {Math.round((cacheProgress.cached / cacheProgress.total) * 100)}%
+              </p>
+            </div>
+          )}
           <p className="text-sm text-gray-400">يرجى الانتظار حتى اكتمال التحميل للاستخدام بدون انترنت</p>
         </div>
       </div>
