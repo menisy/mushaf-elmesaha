@@ -156,6 +156,15 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
     const currentTime = new Date().getTime();
     const baseAyaId = getBaseAyaId(id);
 
+    // If there's already a highlight and we tap a different aya, clear the highlight
+    if (tooltipPosition && selectedAyaId && selectedAyaId !== baseAyaId) {
+      setHighlightedAyas(new Set());
+      setTooltipPosition(null);
+      setSelectedAyaId(null);
+      setLastTap(null);
+      return;
+    }
+
     if (lastTap && lastTap.id === baseAyaId && currentTime - lastTap.time < 300) {
       // Double tap detected
       if (event.type === 'touchstart') {
