@@ -38,7 +38,7 @@ const SurahModal: React.FC<SurahModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Surah List"
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center p-4"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       style={{
         overlay: {
@@ -52,13 +52,14 @@ const SurahModal: React.FC<SurahModalProps> = ({
           position: 'relative',
           background: 'none',
           border: 'none',
-          padding: 0,
+          padding: '1rem',
           inset: 'auto',
-          margin: '1rem'
+          width: '100%',
+          maxWidth: '32rem'
         }
       }}
     >
-      <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full">
         <h2 className="text-xl font-semibold mb-4 text-center">الفهرس</h2>
         <div className="overflow-y-auto max-h-96">
           {surahs.map((surah) => (
