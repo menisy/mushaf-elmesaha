@@ -129,13 +129,16 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
     return parts.length > 2 ? `${parts[0]}_${parts[1]}` : id;
   };
 
-  const handleHighlight = (baseAyaId: string, event?: React.MouseEvent | React.TouchEvent) => {
+  const handleHighlight = (baseAyaId: string, event?: React.MouseEvent | Touch) => {
     // Clear previous highlights and set new one
     setHighlightedAyas(new Set([baseAyaId]));
 
     if (event) {
-      // Calculate tooltip position
-      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      // Calculate tooltip position based on event type
+      const rect = event instanceof Touch
+        ? (event.target as HTMLElement).getBoundingClientRect()
+        : (event.target as HTMLElement).getBoundingClientRect();
+
       setTooltipPosition({
         x: rect.left + rect.width / 2,
         y: rect.top - 10
@@ -145,15 +148,21 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
   };
 
   const handleTap = (id: string, event: React.TouchEvent | React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+    // Don't call preventDefault on touch events
+    if (event.type !== 'touchstart') {
+      event.stopPropagation();
+    }
 
     const currentTime = new Date().getTime();
     const baseAyaId = getBaseAyaId(id);
 
     if (lastTap && lastTap.id === baseAyaId && currentTime - lastTap.time < 300) {
       // Double tap detected
-      handleHighlight(baseAyaId, event);
+      if (event.type === 'touchstart') {
+        handleHighlight(baseAyaId, (event as React.TouchEvent).touches[0]);
+      } else {
+        handleHighlight(baseAyaId, event as React.MouseEvent);
+      }
       setLastTap(null);
     } else {
       // First tap
