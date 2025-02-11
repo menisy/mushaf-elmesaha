@@ -59,11 +59,13 @@ const Header: React.FC<HeaderProps> = ({ surahName,
           <span className="px-1" style={{ fontFamily: 'sans-serif', fontSize: 12 }}>{hizbArabicNumber}</span>{' '}
         </div>
       </div>
+      <div className="z-50">
       <SurahModal
         isOpen={isModalOpen}
         onRequestClose={handleCloseModal}
         onSurahSelect={onSurahSelect}
-      />
+        />
+      </div>
     </header>
   );
 };

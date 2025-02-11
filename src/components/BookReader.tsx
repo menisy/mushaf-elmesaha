@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer
 import type { Page } from '../types';
 import Header from './Header';
 import AyaHighlighter from './AyaHighliter';
+import Footer from './Footer';
 
 export default function BookReader() {
   const [bookPages, setBookPages] = useState<Page[]>([]);
@@ -13,6 +14,7 @@ export default function BookReader() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isColorMode, setIsColorMode] = useState(false);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   // rjust 1 to 001
@@ -129,15 +131,20 @@ export default function BookReader() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentPage]);
 
+  const handleReaderClick = () => {
+    setIsFooterVisible(prev => !prev);
+  };
+
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen flex flex-col items-center justify-center touch-pan-x ${
+      className={`min-h-screen flex flex-col items-center overflow-hidden justify-center touch-pan-x ${
         isColorMode ? 'bg-gray-900' : 'bg-[#FFFDD0]'
       }`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onClick={handleReaderClick}
     >
       {bookPages.length > 0 && (
         <Header
@@ -166,17 +173,21 @@ export default function BookReader() {
 
       <div className="max-w-3xl mx-auto relative w-full flex justify-center">
         {bookPages.length > 0 && (
-          <div className="relative">
+          <div className="relative mt-10 z-10">
             <img
               ref={imageRef}
               src={bookPages[currentPage].imageUrl}
               alt={bookPages[currentPage].title}
-              className={`h-auto max-h-[90vh] mx-auto mt-2 px-2 object-contain ${
+              className={`h-auto max-h-[90vh] mx-auto px-2 object-contain ${
                 isColorMode ? 'invert brightness-90' : ''
               }`}
-              style={{ direction: 'rtl', border: '1px solid orange' }}
+              style={{ direction: 'rtl' }}
             />
-            <AyaHighlighter currentPage={currentPage} imageRef={imageRef} />
+            <AyaHighlighter
+              currentPage={currentPage}
+              imageRef={imageRef}
+              isDarkMode={isColorMode}
+            />
           </div>
         )}
       </div>
@@ -191,20 +202,11 @@ export default function BookReader() {
         </button>
       )}
 
-      <button
-        onClick={toggleColorMode}
-        className="fixed bottom-4 left-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
-      >
-        <Eye className="w-6 h-6 text-white" />
-      </button>
-
-      <button
-        onClick={bookmarkPage}
-        className="fixed bottom-4 right-4 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800 transition-colors"
-      >
-        <Bookmark className="w-6 h-6 text-white" />
-      </button>
-
+      <Footer
+        isVisible={isFooterVisible}
+        onToggleColorMode={toggleColorMode}
+        onBookmarkPage={bookmarkPage}
+      />
       <ToastContainer />
     </div>
   );

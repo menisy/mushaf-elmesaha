@@ -40,6 +40,15 @@ const SurahModal: React.FC<SurahModalProps> = ({
       contentLabel="Surah List"
       className="fixed inset-0 flex items-center justify-center p-4"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      style={{
+        overlay: {
+          zIndex: 100,
+        },
+        content: {
+          position: 'relative',
+          zIndex: 101,
+        },
+      }}
     >
       <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4 text-center">الفهرس</h2>
