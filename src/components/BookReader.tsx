@@ -21,6 +21,7 @@ export default function BookReader() {
   const imageRef = useRef<HTMLImageElement>(null);
   // rjust 1 to 001
   const currentPageString = currentPage.toString().padStart(3, '0');
+  const [isOfflineReady, setIsOfflineReady] = useState(false);
 
   const convertPageNumerToAdjustedString = (pageNumber: number) => {
     return pageNumber.toString().padStart(3, '0') + '.png';
@@ -136,6 +137,26 @@ export default function BookReader() {
   const handleReaderClick = () => {
     setIsFooterVisible(prev => !prev);
   };
+
+  useEffect(() => {
+    // Listen for service worker installation completion
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        setIsOfflineReady(true);
+      });
+    }
+  }, []);
+
+  if (!isOfflineReady) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-900">
+        <div className="text-center text-white">
+          <h2 className="text-xl mb-4">جاري تحميل المصحف</h2>
+          <p className="text-sm text-gray-400">يرجى الانتظار حتى اكتمال التحميل للاستخدام بدون انترنت</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
