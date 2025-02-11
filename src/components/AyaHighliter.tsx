@@ -45,7 +45,7 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
       setHighlightData(data);
     };
 
-    console.log("fetched data")
+    // console.log("fetched data")
 
     fetchHighlightData();
   }, []);
@@ -110,8 +110,8 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
   const scales = updateHighlightPositions();
   // console.log(scales)
   let { widthRatio, heightRatio, topOffset, leftOffset } = scales;
-  console.log(currentPageHighlights);
-  console.log(numberOfLines());
+  // console.log(currentPageHighlights);
+  // console.log(numberOfLines());
   const linesCount = numberOfLines();
   if (linesCount === 11) {
     heightRatio = heightRatio * (linesCount / MAX_LINES);
@@ -271,7 +271,7 @@ const AyaHighlighter: React.FC<AyaHighlighterProps> = ({ currentPage, imageRef, 
             onClick={handleTafseerClick}
           >
             <span className="text-xl">📖</span>
-            <span className="dark:text-white">تفسير</span>
+            <span className="dark:text-white">التفسير</span>
           </button>
         </div>
       )}

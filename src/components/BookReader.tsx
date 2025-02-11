@@ -5,6 +5,7 @@ import type { Page } from '../types';
 import Header from './Header';
 import AyaHighlighter from './AyaHighliter';
 import Footer from './Footer';
+import SearchResults from './SearchResults';
 
 export default function BookReader() {
   const [bookPages, setBookPages] = useState<Page[]>([]);
@@ -15,6 +16,7 @@ export default function BookReader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isColorMode, setIsColorMode] = useState(false);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   // rjust 1 to 001
@@ -206,7 +208,18 @@ export default function BookReader() {
         isVisible={isFooterVisible}
         onToggleColorMode={toggleColorMode}
         onBookmarkPage={bookmarkPage}
+        onOpenSearch={() => setIsSearchOpen(true)}
       />
+
+      <SearchResults
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onResultClick={(page) => {
+          setCurrentPage(page);
+          setIsSearchOpen(false);
+        }}
+      />
+
       <ToastContainer />
     </div>
   );
